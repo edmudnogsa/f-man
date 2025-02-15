@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Файловый менеджер</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { display: block; margin: 10px 0; padding: 10px; font-size: 16px; background: #0088cc; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Файловый менеджер</h2>
+    <button id="back-btn" style="display: none;">🔙 Назад</button>
+    <button id="refresh-btn">🔄 Обновить</button>
+    <ul id="file-list"></ul>
+
+    <script>
+        let currentPath = "";
+        const serverURL = "https://your-server.com"; // Замените на ваш сервер
+
+        async function loadFiles(path = "") {
+            currentPath = path;
+            const response = await fetch(`${serverURL}/list?path=${path}`);
+            const data = await response.json();
+            const fileList = document.getElementById("file-list");
+            const backButton = document.getElementById("back-btn");
+
+            fileList.innerHTML = "";
+            backButton.style.display = path ? "block" : "none";
+
+            data.items.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = item.is_dir ? `📁 ${item.name}` : `📄 ${item.name}`;
+                li.onclick = () => {
+                    if (item.is_dir) loadFiles(`${path}/${item.name}`);
+                    else Telegram.WebApp.sendData(`${path}/${item.name}`);
+                };
+                fileList.appendChild(li);
+            });
+        }
+
+        document.getElementById("back-btn").onclick = () => {
+            const newPath = currentPath.split("/").slice(0, -1).join("/");
+            loadFiles(newPath);
+        };
+
+        document.getElementById("refresh-btn").onclick = () => loadFiles(currentPath);
+
+        Telegram.WebApp.ready();
+        loadFiles();
+    </script>
+</body>
+</html>
