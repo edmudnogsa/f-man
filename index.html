@@ -1,34 +1,12 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Файловый менеджер</title>
+    <title>Data from GitHub</title>
 </head>
 <body>
-    <h1>Файловый менеджер</h1>
-    <ul id="file-list"></ul>
-
-    <script>
-        async function loadFiles() {
-            try {
-                let response = await fetch("http://localhost:5000/files");
-                let data = await response.json();
-
-                let fileList = document.getElementById("file-list");
-                fileList.innerHTML = "";
-
-                data.files.forEach(file => {
-                    let li = document.createElement("li");
-                    li.textContent = file.name;
-                    fileList.appendChild(li);
-                });
-            } catch (error) {
-                console.error("Ошибка загрузки файлов:", error);
-            }
-        }
-
-        loadFiles();
-    </script>
+    <h1>Data from GitHub Repository</h1>
+    <pre>{{ data | tojson(indent=2) }}</pre>
 </body>
 </html>
